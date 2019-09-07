@@ -1,8 +1,6 @@
 package lv.javaguru.chemisov;
 
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
+import java.io.*;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,6 +9,7 @@ import java.util.Map;
 public class ProductDatabase {
     private final static ProductDatabase database = new ProductDatabase();
     private static Map<Long, Product> inMemoryDb = new HashMap<>();
+    private static final String DB_FILE_NAME = "products.ser";
 
     private ProductDatabase() {
 
@@ -40,6 +39,24 @@ public class ProductDatabase {
     }
 
     public void start() {
+        try (FileInputStream fi = new FileInputStream(DB_FILE_NAME);
+             ObjectInputStream os = new ObjectInputStream(fi)) {
+            inMemoryDb = (HashMap<Long, Product>) os.readObject();
+            Product.nextId = os.readLong();
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+        }
+        if (size() < 1) {
+            fillInitialData();
+        }
+    }
+
+    private void fillInitialData() {
+        System.out.println("Pollute database with some records...");
         addProduct(new Product(ProductCategory.FRUITS, "Apple", new BigDecimal("2.50")));
         addProduct(new Product(ProductCategory.FRUITS, "Banana", new BigDecimal("3.14")));
         addProduct(new Product(ProductCategory.VEGETABLES, "Potatoes", new BigDecimal("1.1475"),
@@ -50,7 +67,6 @@ public class ProductDatabase {
                 "Cashew nuts are native to Brazil, where they have long been viewed as a delicacy.",
                 new BigDecimal("0.15")));
     }
-
     public void readFile() {
 
     }
@@ -59,9 +75,10 @@ public class ProductDatabase {
     }
 
     public void shutdown() {
-        try (FileOutputStream fs = new FileOutputStream("products.ser");
+        try (FileOutputStream fs = new FileOutputStream(DB_FILE_NAME);
              ObjectOutputStream os = new ObjectOutputStream(fs)) {
             os.writeObject(inMemoryDb);
+            os.writeLong(Product.nextId);
         } catch (IOException e) {
             e.printStackTrace();
         }

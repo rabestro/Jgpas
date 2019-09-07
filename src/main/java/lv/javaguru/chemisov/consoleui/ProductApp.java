@@ -9,6 +9,8 @@ import java.util.ArrayList;
 
 class ProductApp extends ConsoleApp {
     private final ProductDatabase database = ProductDatabase.getInstance();
+    public static final BigDecimal MIN_DISCOUNT = new BigDecimal(0.0);
+    public static final BigDecimal MAX_DISCOUNT = new BigDecimal(1.0);
 
     private long promptId() {
         long id = -1;
@@ -28,7 +30,7 @@ class ProductApp extends ConsoleApp {
         return id;
     }
     private String promptName() {
-        String name = null;
+        String name;
 
         do {
             name = readLine("Enter the product name: ");
@@ -80,7 +82,7 @@ class ProductApp extends ConsoleApp {
             String line = readLine("Press Enter if no discount: ");
 
             if (line.length() < 1) {
-                discount = new BigDecimal(0.0);
+                discount = MIN_DISCOUNT;
                 continue;
             }
 
@@ -93,13 +95,13 @@ class ProductApp extends ConsoleApp {
                 continue;
             }
 
-            if (discount.compareTo(new BigDecimal(0.0)) == -1) {
+            if (discount.compareTo(MIN_DISCOUNT) == -1) {
                 printError("The discount can't be negative number.");
                 discount = null;
                 continue;
             }
 
-            if (discount.compareTo(new BigDecimal(1.0)) == 1) {
+            if (discount.compareTo(MAX_DISCOUNT) == 1) {
                 printError("The discount can't be more the 1.");
                 discount = null;
             }
@@ -159,7 +161,6 @@ class ProductApp extends ConsoleApp {
         for (ProductCategory category : ProductCategory.values()) {
             printFormat("%5d %s%n", category.ordinal(), category.getTitle());
         }
-        pauseExecution();
     }
 
     void productDelete() {

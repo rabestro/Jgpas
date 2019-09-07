@@ -5,14 +5,12 @@ import java.math.BigDecimal;
 import java.util.Objects;
 
 public class Product implements Comparable, Serializable {
-    private static final long serialVersionUID = 360163330673802062L;
-
-    private static long nextId = 0;
+    private static final long serialVersionUID = 360163334673802062L;
+    static long nextId = 0;
 
     private static long generateNewId() {
         return ++nextId;
     }
-
     private final long id;
     private String name;
     private String description;

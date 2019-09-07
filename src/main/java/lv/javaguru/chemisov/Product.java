@@ -1,8 +1,9 @@
 package lv.javaguru.chemisov;
 
 import java.math.BigDecimal;
+import java.util.Objects;
 
-public class Product {
+public class Product implements Comparable {
     private static long nextId = 0;
     private static long generateNewId() {
         return ++nextId;
@@ -15,9 +16,10 @@ public class Product {
     private BigDecimal discount;
     private ProductCategory category;
 
-    Product(ProductCategory category, String name, BigDecimal price) {
+    public Product(ProductCategory category, String name, BigDecimal price) {
         this(category, name, price, null, null);
     }
+
     public Product(ProductCategory category, String name, BigDecimal price,
             String description,  BigDecimal discount) {
 
@@ -30,6 +32,28 @@ public class Product {
         this.discount = discount == null ? new BigDecimal("0.00") : discount;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Product product = (Product) o;
+        return getName().equals(product.getName()) &&
+                getCategory() == product.getCategory();
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(getName(), getCategory());
+    }
+
+    @Override
+    public int compareTo(Object o) {
+        Product p = (Product) o;
+        if (this.category != p.category) {
+            return this.category.compareTo(p.category);
+        }
+        return this.name.compareTo(p.name);
+    }
     public long getId() {
         return id;
     }
@@ -96,5 +120,4 @@ public class Product {
         }
         return buffer.toString();
     }
-        
 }

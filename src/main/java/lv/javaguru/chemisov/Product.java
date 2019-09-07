@@ -1,10 +1,14 @@
 package lv.javaguru.chemisov;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Objects;
 
-public class Product implements Comparable {
+public class Product implements Comparable, Serializable {
+    private static final long serialVersionUID = 360163330673802062L;
+
     private static long nextId = 0;
+
     private static long generateNewId() {
         return ++nextId;
     }
@@ -71,6 +75,9 @@ public class Product implements Comparable {
     }
 
     public void setName(String name) {
+        if (name == null) {
+            throw new IllegalArgumentException("Product name is mandatory field!");
+        }
         this.name = name;
     }
 
@@ -79,6 +86,9 @@ public class Product implements Comparable {
     }
 
     public void setCategory(ProductCategory category) {
+        if (category == null) {
+            throw new IllegalArgumentException("Product category is mandatory field!");
+        }
         this.category = category;
     }
 
@@ -87,7 +97,22 @@ public class Product implements Comparable {
     }
 
     public void setDiscount(BigDecimal discount) {
+        if (discount.doubleValue() < 0) {
+            throw new IllegalArgumentException("Discount can't be negative!");
+        }
+
+        if (discount.doubleValue() > 1) {
+            throw new IllegalArgumentException("Discount can't be greater then 1!");
+        }
         this.discount = discount;
+    }
+
+    public void setDiscount(double discount) {
+        setDiscount(new BigDecimal(discount));
+    }
+
+    public void setDiscount(String discount) {
+        setDiscount(new BigDecimal(discount));
     }
 
     public BigDecimal getPrice() {
@@ -95,17 +120,29 @@ public class Product implements Comparable {
     }
 
     public void setPrice(BigDecimal price) {
+        if (price.doubleValue() < 0) {
+            throw new IllegalArgumentException("Price can't be negative!");
+        }
+        if (price.doubleValue() == 0) {
+            throw new IllegalArgumentException("Price can't be zero!");
+        }
         this.price = price;
+    }
+    public void setPrice(String price) {
+        this.setPrice(new BigDecimal(price));
     }
     public boolean hasDiscount() {
         return discount.compareTo(new BigDecimal("0.00")) > 0;
     }
+
     public BigDecimal getActualPrice() {
         return price.subtract(price.multiply(discount));
     }
+
     public String getDiscountPercent() {
         return discount.multiply(new BigDecimal(100)).intValue() + "%";
     }
+
     @Override
     public String toString() {
         StringBuilder buffer = new StringBuilder();

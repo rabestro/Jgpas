@@ -1,5 +1,8 @@
 package lv.javaguru.chemisov;
 
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -48,11 +51,19 @@ public class ProductDatabase {
                 new BigDecimal("0.15")));
     }
 
-    public void readFromFile() {
+    public void readFile() {
+
+    }
+    public void writeFile() {
 
     }
 
     public void shutdown() {
-
+        try (FileOutputStream fs = new FileOutputStream("products.ser");
+             ObjectOutputStream os = new ObjectOutputStream(fs)) {
+            os.writeObject(inMemoryDb);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }
